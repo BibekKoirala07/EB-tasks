@@ -1,41 +1,106 @@
+"use strict";
 var Status;
 (function (Status) {
     Status["ToDo"] = "To do";
     Status["Doing"] = "Doing";
     Status["Done"] = "Done";
 })(Status || (Status = {}));
-var tasks = [
+const tasks = [
     { name: "Learn TypeScript", status: Status.ToDo },
-    { name: "Learn TypeScript", status: Status.ToDo },
-    { name: "Learn TypeScript", status: Status.ToDo },
-    { name: "Build Task App", status: Status.Doing },
-    { name: "Build Task App", status: Status.Doing },
-    { name: "Build Task App", status: Status.Doing },
-    { name: "Deploy to GitHub", status: Status.Done },
-    { name: "Deploy to GitHub", status: Status.Done },
-    { name: "Deploy to GitHub", status: Status.Done },
+    { name: "Learn ypeScript", status: Status.ToDo },
+    { name: "Learn Tyt", status: Status.ToDo },
+    { name: "Build Tsk App", status: Status.Doing },
+    { name: "Build ask App", status: Status.Doing },
+    { name: "BuildTask App", status: Status.Doing },
+    { name: "Deploy o GitHub", status: Status.Done },
+    { name: "Deployto GitHub", status: Status.Done },
+    { name: "Deplo to GitHub", status: Status.Done },
 ];
-var inputField = document.getElementById("container-form-input");
-var addBtn = document.getElementById("container-form-btn");
+const inputField = document.getElementById("container-form-input");
+const addBtn = document.getElementById("container-form-btn");
 /* ------------ Tasks Types --------------- */
-var containerTasksTodoDisplay = document.getElementById("container-tasks-todo-display");
-var containerTasksDoingDisplay = document.getElementById("container-tasks-doing-display");
-var containerTasksDoneDisplay = document.getElementById("container-tasks-done-display");
-var draggedTasks = null;
+const containerTasksTodoDisplay = document.getElementById("container-tasks-todo-display");
+const containerTasksDoingDisplay = document.getElementById("container-tasks-doing-display");
+const containerTasksDoneDisplay = document.getElementById("container-tasks-done-display");
+let draggedTasks = null;
 function handleDragStart(e) {
     console.log("e in drag start", e);
+    // here which task we're dragging
+    const target = e.target;
+    const taskName = target.dataset.name;
+    const taskStatus = target.dataset.status;
+    draggedTasks = {
+        name: taskName,
+        status: taskStatus,
+    };
+    //   console.log("Started dragging", draggedTasks);
 }
 function handleDragEng(e) {
     console.log("e in drag end", e);
+    draggedTasks = null;
+    console.log("finished dragging");
+}
+function handleDragOver(e) {
+    console.log("handleDragOver");
+    // must prevent default to allow dropping
+    e.preventDefault();
+    //   console.log("Dragging over drop zone.");
+}
+function handleDrop(e) {
+    console.log("handleDrop");
+    e.preventDefault();
+    //   console.log("Dropped!!", draggedTasks);
+    if (!draggedTasks)
+        return;
+    const dropZone = e.currentTarget;
+    const columnId = dropZone.id;
+    let newStatus;
+    if (columnId === "container-tasks-todo-display") {
+        newStatus = Status.ToDo;
+    }
+    else if (columnId === "container-tasks-doing-display") {
+        newStatus = Status.Doing;
+    }
+    else if (columnId === "container-tasks-done-display") {
+        newStatus = Status.Done;
+    }
+    else {
+        return; // invalid drop zone
+    }
+    moveTask(draggedTasks.name, draggedTasks.status, newStatus);
+}
+function setUpDropZones() {
+    console.log("setup Zones");
+    [
+        containerTasksDoingDisplay,
+        containerTasksDoneDisplay,
+        containerTasksTodoDisplay,
+    ].forEach((each) => {
+        each.addEventListener("dragover", handleDragOver);
+        each.addEventListener("drop", handleDrop);
+    });
+}
+function moveTask(taskName, oldStatus, newStatus) {
+    console.log(`Moving ${taskName} from ${oldStatus} to ${newStatus}`);
+    const taskToMove = tasks.find((task) => task.name === taskName && task.status === oldStatus);
+    if (!taskToMove) {
+        console.log("Tak not found!!");
+        return;
+    }
+    taskToMove.status = newStatus;
+    displayAllTasks();
+    console.log("Task moved successfully");
 }
 function displayTasksByStatus(status, container) {
+    console.log("display tasks Status");
     container.innerHTML = "";
-    var filteredTasks = tasks.filter(function (task) { return task.status === status; });
-    filteredTasks.forEach(function (task) {
-        var li = document.createElement("li");
+    const filteredTasks = tasks.filter((task) => task.status === status);
+    filteredTasks.forEach((task) => {
+        const li = document.createElement("li");
         li.textContent = task.name;
         li.draggable = true;
         li.dataset.name = task.name;
+        li.dataset.status = task.status;
         li.addEventListener("dragstart", handleDragStart);
         li.addEventListener("dragend", handleDragEng);
         container.appendChild(li);
@@ -46,14 +111,14 @@ function displayAllTasks() {
     displayTasksByStatus(Status.Doing, containerTasksDoingDisplay);
     displayTasksByStatus(Status.Done, containerTasksDoneDisplay);
 }
-addBtn.addEventListener("click", function (e) {
+addBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    var taskName = inputField === null || inputField === void 0 ? void 0 : inputField.value.trim();
+    const taskName = inputField?.value.trim();
     if (!taskName) {
         alert("Please enter a task name.");
         return;
     }
-    var newTask = {
+    const newTask = {
         name: taskName,
         status: Status.ToDo,
     };
@@ -64,3 +129,4 @@ addBtn.addEventListener("click", function (e) {
 });
 // console.log("here");
 displayAllTasks();
+setUpDropZones();
