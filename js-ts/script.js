@@ -7,14 +7,8 @@ var Status;
 })(Status || (Status = {}));
 const tasks = [
     { name: "Learn TypeScript", status: Status.ToDo },
-    { name: "Learn ypeScript", status: Status.ToDo },
-    { name: "Learn Tyt", status: Status.ToDo },
-    { name: "Build Tsk App", status: Status.Doing },
-    { name: "Build ask App", status: Status.Doing },
-    { name: "BuildTask App", status: Status.Doing },
-    { name: "Deploy o GitHub", status: Status.Done },
-    { name: "Deployto GitHub", status: Status.Done },
-    { name: "Deplo to GitHub", status: Status.Done },
+    { name: "Build Task App", status: Status.Doing },
+    { name: "Deploy to GitHub", status: Status.Done },
 ];
 const inputField = document.getElementById("container-form-input");
 const addBtn = document.getElementById("container-form-btn");
@@ -42,9 +36,7 @@ function handleDragEng(e) {
 }
 function handleDragOver(e) {
     console.log("handleDragOver");
-    // must prevent default to allow dropping
     e.preventDefault();
-    //   console.log("Dragging over drop zone.");
 }
 function handleDrop(e) {
     console.log("handleDrop");
@@ -91,13 +83,33 @@ function moveTask(taskName, oldStatus, newStatus) {
     displayAllTasks();
     console.log("Task moved successfully");
 }
+function deleteTask(name) {
+    const index = tasks.findIndex((task) => task.name === name);
+    if (index !== -1) {
+        tasks.splice(index, 1);
+        displayAllTasks();
+    }
+}
 function displayTasksByStatus(status, container) {
     console.log("display tasks Status");
     container.innerHTML = "";
     const filteredTasks = tasks.filter((task) => task.status === status);
     filteredTasks.forEach((task) => {
         const li = document.createElement("li");
-        li.textContent = task.name;
+        li.classList.add("each-list");
+        const span = document.createElement("span");
+        span.textContent = task.name;
+        span.classList.add("task-name");
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "🗑️";
+        deleteBtn.classList.add("delete-btn");
+        deleteBtn.title = "Delete Task";
+        li.appendChild(span);
+        li.appendChild(deleteBtn);
+        deleteBtn.addEventListener("click", () => {
+            deleteTask(task.name);
+            displayTasksByStatus(status, container);
+        });
         li.draggable = true;
         li.dataset.name = task.name;
         li.dataset.status = task.status;
