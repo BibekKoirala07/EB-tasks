@@ -7,8 +7,11 @@ var Status;
 })(Status || (Status = {}));
 const tasks = [
     { name: "Learn TypeScript", status: Status.ToDo },
+    { name: "Learn Java script", status: Status.ToDo },
     { name: "Build Task App", status: Status.Doing },
+    { name: "Build Uber", status: Status.Doing },
     { name: "Deploy to GitHub", status: Status.Done },
+    { name: "Be real", status: Status.Done },
 ];
 const inputField = document.getElementById("container-form-input");
 const addBtn = document.getElementById("container-form-btn");
@@ -17,6 +20,13 @@ const containerTasksTodoDisplay = document.getElementById("container-tasks-todo-
 const containerTasksDoingDisplay = document.getElementById("container-tasks-doing-display");
 const containerTasksDoneDisplay = document.getElementById("container-tasks-done-display");
 let draggedTasks = null;
+function checkDuplicateTaskName() {
+    const taskName = inputField.value.trim();
+    const isDuplicate = tasks.some((task) => task.name.toLowerCase() === taskName.toLowerCase());
+    addBtn.disabled = taskName === "" || isDuplicate;
+}
+inputField.addEventListener("input", checkDuplicateTaskName);
+checkDuplicateTaskName();
 function handleDragStart(e) {
     console.log("e in drag start", e);
     // here which task we're dragging
@@ -35,11 +45,12 @@ function handleDragEng(e) {
     console.log("finished dragging");
 }
 function handleDragOver(e) {
-    console.log("handleDragOver");
+    console.log("handleDragOver", e.currentTarget);
     e.preventDefault();
+    e.currentTarget.style.backgroundColor = "#000";
 }
 function handleDrop(e) {
-    console.log("handleDrop");
+    console.log("handleDrop", e);
     e.preventDefault();
     //   console.log("Dropped!!", draggedTasks);
     if (!draggedTasks)

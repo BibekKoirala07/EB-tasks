@@ -11,8 +11,13 @@ type TypeTask = {
 
 const tasks: TypeTask[] = [
   { name: "Learn TypeScript", status: Status.ToDo },
+  { name: "Learn Java script", status: Status.ToDo },
+
   { name: "Build Task App", status: Status.Doing },
+  { name: "Build Uber", status: Status.Doing },
+
   { name: "Deploy to GitHub", status: Status.Done },
+  { name: "Be real", status: Status.Done },
 ];
 
 const inputField = document.getElementById(
@@ -32,6 +37,19 @@ const containerTasksDoneDisplay = document.getElementById(
 ) as HTMLUListElement;
 
 let draggedTasks: { name: string; status: Status } | null = null;
+
+function checkDuplicateTaskName() {
+  const taskName = inputField.value.trim();
+  const isDuplicate = tasks.some(
+    (task) => task.name.toLowerCase() === taskName.toLowerCase()
+  );
+
+  addBtn.disabled = taskName === "" || isDuplicate;
+}
+
+inputField.addEventListener("input", checkDuplicateTaskName);
+
+checkDuplicateTaskName();
 
 function handleDragStart(e: DragEvent) {
   console.log("e in drag start", e);
@@ -57,12 +75,13 @@ function handleDragEng(e: DragEvent) {
 }
 
 function handleDragOver(e: DragEvent) {
-  console.log("handleDragOver");
+  console.log("handleDragOver", e.currentTarget);
   e.preventDefault();
+  (e.currentTarget as HTMLUListElement).style.backgroundColor = "#000";
 }
 
 function handleDrop(e: DragEvent) {
-  console.log("handleDrop");
+  console.log("handleDrop", e);
   e.preventDefault();
   //   console.log("Dropped!!", draggedTasks);
 
