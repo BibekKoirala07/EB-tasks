@@ -138,7 +138,8 @@ body {
 
 .container-tasks > * > h1 {
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 700;
+  text-align: center;
   color: var(--card-text);
   margin-bottom: 1.5rem;
 }
@@ -181,4 +182,13 @@ body {
   padding: 0.25rem;
   background-color: #684d4d;
   border-radius: 2px;
+}
+
+/* ------------------- Utility Class ----------------------- */
+
+.bg-blue {
+  background-color: #e3f2fd;
+}
+.bg-red {
+  background-color: #ffebee;
 }

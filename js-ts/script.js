@@ -15,15 +15,26 @@ const tasks = [
 ];
 const inputField = document.getElementById("container-form-input");
 const addBtn = document.getElementById("container-form-btn");
-/* ------------ Tasks Types --------------- */
+/* ------------ Tasks Types Display Area --------------- */
 const containerTasksTodoDisplay = document.getElementById("container-tasks-todo-display");
 const containerTasksDoingDisplay = document.getElementById("container-tasks-doing-display");
 const containerTasksDoneDisplay = document.getElementById("container-tasks-done-display");
+/* ----------- Main Tasks Div ------------ */
+const containerTasksTodo = document.getElementById("container-tasks-todo");
+const containerTasksDoing = document.getElementById("container-tasks-doing");
+const containerTasksDone = document.getElementById("container-tasks-done");
 let draggedTasks = null;
 function checkDuplicateTaskName() {
     const taskName = inputField.value.trim();
     const isDuplicate = tasks.some((task) => task.name.toLowerCase() === taskName.toLowerCase());
     addBtn.disabled = taskName === "" || isDuplicate;
+}
+const handleDragLeave = (e) => {
+    const parentDiv = getParentDiv(e.currentTarget);
+    parentDiv.classList.remove("bg-blue");
+};
+function getParentDiv(element) {
+    return element.parentElement;
 }
 inputField.addEventListener("input", checkDuplicateTaskName);
 checkDuplicateTaskName();
@@ -43,11 +54,26 @@ function handleDragEng(e) {
     console.log("e in drag end", e);
     draggedTasks = null;
     console.log("finished dragging");
+    [containerTasksDoing, containerTasksDone, containerTasksTodo].map((each) => {
+        if (each) {
+            each.classList.remove("bg-blue");
+            each.classList.remove("bg-red");
+        }
+    });
 }
 function handleDragOver(e) {
     console.log("handleDragOver", e.currentTarget);
     e.preventDefault();
-    e.currentTarget.style.backgroundColor = "#000";
+    const oldStatus = draggedTasks?.status;
+    const dragOverParent = getParentDiv(e.currentTarget);
+    if (oldStatus === Status.ToDo &&
+        dragOverParent.classList.contains("container-tasks-done")) {
+        dragOverParent.classList.add("bg-red");
+    }
+    else {
+        dragOverParent.classList.add("bg-blue");
+    }
+    console.log("dragOverParent", dragOverParent);
 }
 function handleDrop(e) {
     console.log("handleDrop", e);
@@ -57,6 +83,9 @@ function handleDrop(e) {
         return;
     const dropZone = e.currentTarget;
     const columnId = dropZone.id;
+    const oldStatus = draggedTasks.status;
+    const dropParent = getParentDiv(dropZone);
+    dropParent.classList.remove("bg-blue");
     let newStatus;
     if (columnId === "container-tasks-todo-display") {
         newStatus = Status.ToDo;
@@ -65,11 +94,16 @@ function handleDrop(e) {
         newStatus = Status.Doing;
     }
     else if (columnId === "container-tasks-done-display") {
+        if (oldStatus === Status.ToDo) {
+            alert("Invalid Move");
+            return;
+        }
         newStatus = Status.Done;
     }
     else {
         return; // invalid drop zone
     }
+    console.log("newStatus", newStatus, columnId, dropZone);
     moveTask(draggedTasks.name, draggedTasks.status, newStatus);
 }
 function setUpDropZones() {
@@ -80,6 +114,7 @@ function setUpDropZones() {
         containerTasksTodoDisplay,
     ].forEach((each) => {
         each.addEventListener("dragover", handleDragOver);
+        each.addEventListener("dragleave", handleDragLeave);
         each.addEventListener("drop", handleDrop);
     });
 }

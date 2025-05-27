@@ -25,7 +25,7 @@ const inputField = document.getElementById(
 ) as HTMLInputElement;
 const addBtn = <HTMLButtonElement>document.getElementById("container-form-btn");
 
-/* ------------ Tasks Types --------------- */
+/* ------------ Tasks Types Display Area --------------- */
 const containerTasksTodoDisplay = document.getElementById(
   "container-tasks-todo-display"
 ) as HTMLUListElement;
@@ -36,6 +36,17 @@ const containerTasksDoneDisplay = document.getElementById(
   "container-tasks-done-display"
 ) as HTMLUListElement;
 
+/* ----------- Main Tasks Div ------------ */
+const containerTasksTodo = document.getElementById(
+  "container-tasks-todo"
+) as HTMLDivElement;
+const containerTasksDoing = document.getElementById(
+  "container-tasks-doing"
+) as HTMLDivElement;
+const containerTasksDone = document.getElementById(
+  "container-tasks-done"
+) as HTMLDivElement;
+
 let draggedTasks: { name: string; status: Status } | null = null;
 
 function checkDuplicateTaskName() {
@@ -45,6 +56,18 @@ function checkDuplicateTaskName() {
   );
 
   addBtn.disabled = taskName === "" || isDuplicate;
+}
+
+const handleDragLeave = (e: DragEvent) => {
+  const parentDiv: HTMLDivElement = getParentDiv(
+    e.currentTarget as HTMLUListElement
+  );
+
+  parentDiv.classList.remove("bg-blue");
+};
+
+function getParentDiv(element: HTMLUListElement): HTMLDivElement {
+  return element.parentElement as HTMLDivElement;
 }
 
 inputField.addEventListener("input", checkDuplicateTaskName);
@@ -72,12 +95,31 @@ function handleDragEng(e: DragEvent) {
   console.log("e in drag end", e);
   draggedTasks = null;
   console.log("finished dragging");
+  [containerTasksDoing, containerTasksDone, containerTasksTodo].map((each) => {
+    if (each) {
+      each.classList.remove("bg-blue");
+      each.classList.remove("bg-red");
+    }
+  });
 }
 
 function handleDragOver(e: DragEvent) {
   console.log("handleDragOver", e.currentTarget);
   e.preventDefault();
-  (e.currentTarget as HTMLUListElement).style.backgroundColor = "#000";
+  const oldStatus: Status = <Status>draggedTasks?.status;
+  const dragOverParent: HTMLDivElement = getParentDiv(
+    e.currentTarget as HTMLUListElement
+  );
+
+  if (
+    oldStatus === Status.ToDo &&
+    dragOverParent.classList.contains("container-tasks-done")
+  ) {
+    dragOverParent.classList.add("bg-red");
+  } else {
+    dragOverParent.classList.add("bg-blue");
+  }
+  console.log("dragOverParent", dragOverParent);
 }
 
 function handleDrop(e: DragEvent) {
@@ -90,6 +132,11 @@ function handleDrop(e: DragEvent) {
   const dropZone = e.currentTarget as HTMLElement;
   const columnId = dropZone.id;
 
+  const oldStatus: Status = draggedTasks.status;
+
+  const dropParent: HTMLDivElement = getParentDiv(dropZone as HTMLUListElement);
+  dropParent.classList.remove("bg-blue");
+
   let newStatus: Status;
 
   if (columnId === "container-tasks-todo-display") {
@@ -97,15 +144,20 @@ function handleDrop(e: DragEvent) {
   } else if (columnId === "container-tasks-doing-display") {
     newStatus = Status.Doing;
   } else if (columnId === "container-tasks-done-display") {
+    if (oldStatus === Status.ToDo) {
+      alert("Invalid Move");
+      return;
+    }
     newStatus = Status.Done;
   } else {
     return; // invalid drop zone
   }
+  console.log("newStatus", newStatus, columnId, dropZone);
 
   moveTask(draggedTasks.name, draggedTasks.status, newStatus);
 }
 
-function setUpDropZones() {
+function setUpDropZones(): void {
   console.log("setup Zones");
   [
     containerTasksDoingDisplay,
@@ -113,11 +165,16 @@ function setUpDropZones() {
     containerTasksTodoDisplay,
   ].forEach((each) => {
     each.addEventListener("dragover", handleDragOver);
+    each.addEventListener("dragleave", handleDragLeave);
     each.addEventListener("drop", handleDrop);
   });
 }
 
-function moveTask(taskName: string, oldStatus: Status, newStatus: Status) {
+function moveTask(
+  taskName: string,
+  oldStatus: Status,
+  newStatus: Status
+): void {
   console.log(`Moving ${taskName} from ${oldStatus} to ${newStatus}`);
 
   const taskToMove = tasks.find(
