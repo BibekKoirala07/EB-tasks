@@ -9,7 +9,13 @@ type TypeTask = {
   status: Status;
 };
 
-const tasks: TypeTask[] = [
+interface DraggedTask {
+  // id: string;
+  name: string;
+  status: Status;
+}
+
+let tasks: TypeTask[] = [
   { name: "Learn TypeScript", status: Status.ToDo },
   { name: "Learn Java script", status: Status.ToDo },
 
@@ -20,12 +26,15 @@ const tasks: TypeTask[] = [
   { name: "Be real", status: Status.Done },
 ];
 
+/* ----------------- Container Form -------------------- */
+
 const inputField = document.getElementById(
   "container-form-input"
 ) as HTMLInputElement;
 const addBtn = <HTMLButtonElement>document.getElementById("container-form-btn");
 
 /* ------------ Tasks Types Display Area --------------- */
+
 const containerTasksTodoDisplay = document.getElementById(
   "container-tasks-todo-display"
 ) as HTMLUListElement;
@@ -37,6 +46,7 @@ const containerTasksDoneDisplay = document.getElementById(
 ) as HTMLUListElement;
 
 /* ----------- Main Tasks Div ------------ */
+
 const containerTasksTodo = document.getElementById(
   "container-tasks-todo"
 ) as HTMLDivElement;
@@ -47,9 +57,17 @@ const containerTasksDone = document.getElementById(
   "container-tasks-done"
 ) as HTMLDivElement;
 
-let draggedTasks: { name: string; status: Status } | null = null;
+function addTasks(name: string) {
+  tasks.push({ name: name, status: Status.ToDo });
+}
 
-function checkDuplicateTaskName() {
+function deleteTasks(name: string) {
+  tasks = tasks.filter((each) => each.name != name);
+}
+
+let draggedTasks: DraggedTask | null = null;
+
+function checkDuplicateTaskName(): void {
   const taskName = inputField.value.trim();
   const isDuplicate = tasks.some(
     (task) => task.name.toLowerCase() === taskName.toLowerCase()
@@ -58,12 +76,12 @@ function checkDuplicateTaskName() {
   addBtn.disabled = taskName === "" || isDuplicate;
 }
 
-const handleDragLeave = (e: DragEvent) => {
+const handleDragLeave = (e: DragEvent): void => {
   const parentDiv: HTMLDivElement = getParentDiv(
     e.currentTarget as HTMLUListElement
   );
-
   parentDiv.classList.remove("bg-blue");
+  parentDiv.classList.remove("bg-red");
 };
 
 function getParentDiv(element: HTMLUListElement): HTMLDivElement {
@@ -96,7 +114,9 @@ function handleDragEng(e: DragEvent) {
   draggedTasks = null;
   console.log("finished dragging");
   [containerTasksDoing, containerTasksDone, containerTasksTodo].map((each) => {
+    console.log("yeha aayo", each);
     if (each) {
+      console.log("each", each);
       each.classList.remove("bg-blue");
       each.classList.remove("bg-red");
     }
@@ -182,7 +202,7 @@ function moveTask(
   );
 
   if (!taskToMove) {
-    console.log("Tak not found!!");
+    console.log("Task not found!!");
     return;
   }
 
@@ -262,10 +282,7 @@ addBtn.addEventListener("click", (e) => {
   tasks.push(newTask);
   inputField.value = "";
   displayAllTasks();
-  console.log("Task added:", newTask);
 });
-
-// console.log("here");
 
 displayAllTasks();
 setUpDropZones();

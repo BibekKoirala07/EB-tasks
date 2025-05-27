@@ -5,7 +5,7 @@ var Status;
     Status["Doing"] = "Doing";
     Status["Done"] = "Done";
 })(Status || (Status = {}));
-const tasks = [
+let tasks = [
     { name: "Learn TypeScript", status: Status.ToDo },
     { name: "Learn Java script", status: Status.ToDo },
     { name: "Build Task App", status: Status.Doing },
@@ -13,6 +13,7 @@ const tasks = [
     { name: "Deploy to GitHub", status: Status.Done },
     { name: "Be real", status: Status.Done },
 ];
+/* ----------------- Container Form -------------------- */
 const inputField = document.getElementById("container-form-input");
 const addBtn = document.getElementById("container-form-btn");
 /* ------------ Tasks Types Display Area --------------- */
@@ -23,6 +24,12 @@ const containerTasksDoneDisplay = document.getElementById("container-tasks-done-
 const containerTasksTodo = document.getElementById("container-tasks-todo");
 const containerTasksDoing = document.getElementById("container-tasks-doing");
 const containerTasksDone = document.getElementById("container-tasks-done");
+function addTasks(name) {
+    tasks.push({ name: name, status: Status.ToDo });
+}
+function deleteTasks(name) {
+    tasks = tasks.filter((each) => each.name != name);
+}
 let draggedTasks = null;
 function checkDuplicateTaskName() {
     const taskName = inputField.value.trim();
@@ -32,6 +39,7 @@ function checkDuplicateTaskName() {
 const handleDragLeave = (e) => {
     const parentDiv = getParentDiv(e.currentTarget);
     parentDiv.classList.remove("bg-blue");
+    parentDiv.classList.remove("bg-red");
 };
 function getParentDiv(element) {
     return element.parentElement;
@@ -55,7 +63,9 @@ function handleDragEng(e) {
     draggedTasks = null;
     console.log("finished dragging");
     [containerTasksDoing, containerTasksDone, containerTasksTodo].map((each) => {
+        console.log("yeha aayo", each);
         if (each) {
+            console.log("each", each);
             each.classList.remove("bg-blue");
             each.classList.remove("bg-red");
         }
@@ -122,7 +132,7 @@ function moveTask(taskName, oldStatus, newStatus) {
     console.log(`Moving ${taskName} from ${oldStatus} to ${newStatus}`);
     const taskToMove = tasks.find((task) => task.name === taskName && task.status === oldStatus);
     if (!taskToMove) {
-        console.log("Tak not found!!");
+        console.log("Task not found!!");
         return;
     }
     taskToMove.status = newStatus;
@@ -183,8 +193,6 @@ addBtn.addEventListener("click", (e) => {
     tasks.push(newTask);
     inputField.value = "";
     displayAllTasks();
-    console.log("Task added:", newTask);
 });
-// console.log("here");
 displayAllTasks();
 setUpDropZones();
