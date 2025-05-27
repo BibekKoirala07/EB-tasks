@@ -21,9 +21,10 @@ const containerTasksTodoDisplay = document.getElementById("container-tasks-todo-
 const containerTasksDoingDisplay = document.getElementById("container-tasks-doing-display");
 const containerTasksDoneDisplay = document.getElementById("container-tasks-done-display");
 /* ----------- Main Tasks Div ------------ */
-const containerTasksTodo = document.getElementById("container-tasks-todo");
-const containerTasksDoing = document.getElementById("container-tasks-doing");
-const containerTasksDone = document.getElementById("container-tasks-done");
+const containerTasksTodo = document.querySelector(".container-tasks-todo");
+const containerTasksDoing = document.querySelector(".container-tasks-doing");
+const containerTasksDone = document.querySelector(".container-tasks-done");
+console.log("container", containerTasksDoing, containerTasksDone, containerTasksTodo);
 function addTasks(name) {
     tasks.push({ name: name, status: Status.ToDo });
 }
@@ -47,8 +48,6 @@ function getParentDiv(element) {
 inputField.addEventListener("input", checkDuplicateTaskName);
 checkDuplicateTaskName();
 function handleDragStart(e) {
-    console.log("e in drag start", e);
-    // here which task we're dragging
     const target = e.target;
     const taskName = target.dataset.name;
     const taskStatus = target.dataset.status;
@@ -56,16 +55,12 @@ function handleDragStart(e) {
         name: taskName,
         status: taskStatus,
     };
-    //   console.log("Started dragging", draggedTasks);
 }
 function handleDragEng(e) {
     console.log("e in drag end", e);
     draggedTasks = null;
-    console.log("finished dragging");
     [containerTasksDoing, containerTasksDone, containerTasksTodo].map((each) => {
-        console.log("yeha aayo", each);
         if (each) {
-            console.log("each", each);
             each.classList.remove("bg-blue");
             each.classList.remove("bg-red");
         }
@@ -88,7 +83,6 @@ function handleDragOver(e) {
 function handleDrop(e) {
     console.log("handleDrop", e);
     e.preventDefault();
-    //   console.log("Dropped!!", draggedTasks);
     if (!draggedTasks)
         return;
     const dropZone = e.currentTarget;
@@ -123,6 +117,7 @@ function setUpDropZones() {
         containerTasksDoneDisplay,
         containerTasksTodoDisplay,
     ].forEach((each) => {
+        console.log("each", each);
         each.addEventListener("dragover", handleDragOver);
         each.addEventListener("dragleave", handleDragLeave);
         each.addEventListener("drop", handleDrop);
@@ -182,15 +177,7 @@ function displayAllTasks() {
 addBtn.addEventListener("click", (e) => {
     e.preventDefault();
     const taskName = inputField?.value.trim();
-    if (!taskName) {
-        alert("Please enter a task name.");
-        return;
-    }
-    const newTask = {
-        name: taskName,
-        status: Status.ToDo,
-    };
-    tasks.push(newTask);
+    addTasks(taskName);
     inputField.value = "";
     displayAllTasks();
 });

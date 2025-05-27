@@ -47,15 +47,22 @@ const containerTasksDoneDisplay = document.getElementById(
 
 /* ----------- Main Tasks Div ------------ */
 
-const containerTasksTodo = document.getElementById(
-  "container-tasks-todo"
+const containerTasksTodo = document.querySelector(
+  ".container-tasks-todo"
 ) as HTMLDivElement;
-const containerTasksDoing = document.getElementById(
-  "container-tasks-doing"
+const containerTasksDoing = document.querySelector(
+  ".container-tasks-doing"
 ) as HTMLDivElement;
-const containerTasksDone = document.getElementById(
-  "container-tasks-done"
+const containerTasksDone = document.querySelector(
+  ".container-tasks-done"
 ) as HTMLDivElement;
+
+console.log(
+  "container",
+  containerTasksDoing,
+  containerTasksDone,
+  containerTasksTodo
+);
 
 function addTasks(name: string) {
   tasks.push({ name: name, status: Status.ToDo });
@@ -72,7 +79,6 @@ function checkDuplicateTaskName(): void {
   const isDuplicate = tasks.some(
     (task) => task.name.toLowerCase() === taskName.toLowerCase()
   );
-
   addBtn.disabled = taskName === "" || isDuplicate;
 }
 
@@ -89,13 +95,9 @@ function getParentDiv(element: HTMLUListElement): HTMLDivElement {
 }
 
 inputField.addEventListener("input", checkDuplicateTaskName);
-
 checkDuplicateTaskName();
 
 function handleDragStart(e: DragEvent) {
-  console.log("e in drag start", e);
-
-  // here which task we're dragging
   const target = e.target as HTMLElement;
 
   const taskName = target.dataset.name!;
@@ -105,18 +107,13 @@ function handleDragStart(e: DragEvent) {
     name: taskName,
     status: taskStatus as Status,
   };
-
-  //   console.log("Started dragging", draggedTasks);
 }
 
 function handleDragEng(e: DragEvent) {
   console.log("e in drag end", e);
   draggedTasks = null;
-  console.log("finished dragging");
   [containerTasksDoing, containerTasksDone, containerTasksTodo].map((each) => {
-    console.log("yeha aayo", each);
     if (each) {
-      console.log("each", each);
       each.classList.remove("bg-blue");
       each.classList.remove("bg-red");
     }
@@ -145,7 +142,6 @@ function handleDragOver(e: DragEvent) {
 function handleDrop(e: DragEvent) {
   console.log("handleDrop", e);
   e.preventDefault();
-  //   console.log("Dropped!!", draggedTasks);
 
   if (!draggedTasks) return;
 
@@ -184,6 +180,7 @@ function setUpDropZones(): void {
     containerTasksDoneDisplay,
     containerTasksTodoDisplay,
   ].forEach((each) => {
+    console.log("each", each);
     each.addEventListener("dragover", handleDragOver);
     each.addEventListener("dragleave", handleDragLeave);
     each.addEventListener("drop", handleDrop);
@@ -212,19 +209,10 @@ function moveTask(
   console.log("Task moved successfully");
 }
 
-function deleteTask(name: string): void {
-  const index = tasks.findIndex((task) => task.name === name);
-  if (index !== -1) {
-    tasks.splice(index, 1);
-    displayAllTasks();
-  }
-}
-
 function displayTasksByStatus(
   status: Status,
   container: HTMLUListElement
 ): void {
-  console.log("display tasks Status");
   container.innerHTML = "";
 
   const filteredTasks = tasks.filter((task) => task.status === status);
@@ -246,7 +234,7 @@ function displayTasksByStatus(
     li.appendChild(deleteBtn);
 
     deleteBtn.addEventListener("click", () => {
-      deleteTask(task.name);
+      deleteTasks(task.name);
       displayTasksByStatus(status, container);
     });
 
@@ -267,19 +255,8 @@ function displayAllTasks(): void {
 
 addBtn.addEventListener("click", (e) => {
   e.preventDefault();
-
   const taskName = inputField?.value.trim();
-  if (!taskName) {
-    alert("Please enter a task name.");
-    return;
-  }
-
-  const newTask: TypeTask = {
-    name: taskName,
-    status: Status.ToDo,
-  };
-
-  tasks.push(newTask);
+  addTasks(taskName);
   inputField.value = "";
   displayAllTasks();
 });
