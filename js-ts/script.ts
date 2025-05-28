@@ -14,6 +14,10 @@ interface DraggedTask {
   name: string;
   status: Status;
 }
+function removeHoverClasses(parentDiv: HTMLDivElement) {
+  parentDiv.classList.remove("bg-blue");
+  parentDiv.classList.remove("bg-red");
+}
 
 let tasks: TypeTask[] = [
   { name: "Learn TypeScript", status: Status.ToDo },
@@ -72,8 +76,14 @@ function deleteTasks(name: string) {
   tasks = tasks.filter((each) => each.name != name);
 }
 
+function getParentDiv(element: HTMLUListElement): HTMLDivElement {
+  return element.parentElement as HTMLDivElement;
+}
+
 let draggedTasks: DraggedTask | null = null;
 
+inputField.addEventListener("input", checkDuplicateTaskName);
+checkDuplicateTaskName();
 function checkDuplicateTaskName(): void {
   const taskName = inputField.value.trim();
   const isDuplicate = tasks.some(
@@ -86,16 +96,8 @@ const handleDragLeave = (e: DragEvent): void => {
   const parentDiv: HTMLDivElement = getParentDiv(
     e.currentTarget as HTMLUListElement
   );
-  parentDiv.classList.remove("bg-blue");
-  parentDiv.classList.remove("bg-red");
+  removeHoverClasses(parentDiv);
 };
-
-function getParentDiv(element: HTMLUListElement): HTMLDivElement {
-  return element.parentElement as HTMLDivElement;
-}
-
-inputField.addEventListener("input", checkDuplicateTaskName);
-checkDuplicateTaskName();
 
 function handleDragStart(e: DragEvent) {
   const target = e.target as HTMLElement;
@@ -114,8 +116,7 @@ function handleDragEng(e: DragEvent) {
   draggedTasks = null;
   [containerTasksDoing, containerTasksDone, containerTasksTodo].map((each) => {
     if (each) {
-      each.classList.remove("bg-blue");
-      each.classList.remove("bg-red");
+      removeHoverClasses(each);
     }
   });
 }
@@ -147,9 +148,7 @@ function handleDrop(e: DragEvent) {
 
   const dropZone = e.currentTarget as HTMLElement;
   const columnId = dropZone.id;
-
   const oldStatus: Status = draggedTasks.status;
-
   const dropParent: HTMLDivElement = getParentDiv(dropZone as HTMLUListElement);
   dropParent.classList.remove("bg-blue");
 
