@@ -1,19 +1,5 @@
-enum Status {
-  ToDo = "To do",
-  Doing = "Doing",
-  Done = "Done",
-}
+import { DraggedTask, Status, TypeTask } from "./types/types";
 
-type TypeTask = {
-  name: string;
-  status: Status;
-};
-
-interface DraggedTask {
-  // id: string;
-  name: string;
-  status: Status;
-}
 function removeHoverClasses(parentDiv: HTMLDivElement) {
   parentDiv.classList.remove("bg-blue");
   parentDiv.classList.remove("bg-red");
