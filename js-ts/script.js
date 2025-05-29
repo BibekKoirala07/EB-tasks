@@ -1,8 +1,5 @@
-"use strict";
-function removeHoverClasses(parentDiv) {
-    parentDiv.classList.remove("bg-blue");
-    parentDiv.classList.remove("bg-red");
-}
+import { Status } from "./types/types";
+import { removeHoverClasses } from "./utils/utils";
 let tasks = [
     { name: "Learn TypeScript", status: Status.ToDo },
     { name: "Learn Java script", status: Status.ToDo },

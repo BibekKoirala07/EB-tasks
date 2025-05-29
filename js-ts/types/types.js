@@ -1,5 +1,4 @@
-"use strict";
-var Status;
+export var Status;
 (function (Status) {
     Status["ToDo"] = "To do";
     Status["Doing"] = "Doing";

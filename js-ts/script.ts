@@ -1,9 +1,5 @@
 import { DraggedTask, Status, TypeTask } from "./types/types";
-
-function removeHoverClasses(parentDiv: HTMLDivElement) {
-  parentDiv.classList.remove("bg-blue");
-  parentDiv.classList.remove("bg-red");
-}
+import { removeHoverClasses } from "./utils/utils";
 
 let tasks: TypeTask[] = [
   { name: "Learn TypeScript", status: Status.ToDo },
