@@ -1,6 +1,7 @@
-import { deleteTask, tasks } from "../data/data";
-import { Status } from "../types/types";
-import { displays } from "./domreferences";
+import { tasks } from "../data/data.js";
+import { handleDragEnd, handleDragStart } from "../handlers/dragHandlers.js";
+import { Status } from "../types/types.js";
+import { displays } from "./domreferences.js";
 
 function displayTasksByStatus(
   status: Status,
@@ -27,15 +28,15 @@ function displayTasksByStatus(
     li.appendChild(deleteBtn);
 
     deleteBtn.addEventListener("click", () => {
-      deleteTask(task.name);
+      //   deleteTask(task.name);
       displayTasksByStatus(status, container);
     });
 
     li.draggable = true;
     li.dataset.name = task.name;
     li.dataset.status = task.status;
-    // li.addEventListener("dragstart", handleDragStart);
-    // li.addEventListener("dragend", handleDragEng);
+    li.addEventListener("dragstart", handleDragStart);
+    li.addEventListener("dragend", handleDragEnd);
     container.appendChild(li);
   });
 }

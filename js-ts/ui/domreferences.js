@@ -1,4 +1,4 @@
-import { Status } from "../types/types";
+import { Status } from "../types/types.js";
 export const inputField = document.getElementById("container-form-input");
 export const addBtn = document.getElementById("container-form-btn");
 export const displays = {
