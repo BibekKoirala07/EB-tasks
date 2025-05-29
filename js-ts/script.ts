@@ -1,22 +1,14 @@
-import { DraggedTask, Status, TypeTask } from "./types/types";
+import { addTask, moveTask, tasks } from "./data/data";
+import { displayAllTasks } from "./dom/renderTasks.js";
+import { DraggedTask, Status, TypeTask } from "./types/types.js";
 import { removeHoverClasses } from "./utils/utils";
-
-let tasks: TypeTask[] = [
-  { name: "Learn TypeScript", status: Status.ToDo },
-  { name: "Learn Java script", status: Status.ToDo },
-
-  { name: "Build Task App", status: Status.Doing },
-  { name: "Build Uber", status: Status.Doing },
-
-  { name: "Deploy to GitHub", status: Status.Done },
-  { name: "Be real", status: Status.Done },
-];
 
 /* ----------------- Container Form -------------------- */
 
 const inputField = document.getElementById(
   "container-form-input"
 ) as HTMLInputElement;
+
 const addBtn = <HTMLButtonElement>document.getElementById("container-form-btn");
 
 /* ------------ Tasks Types Display Area --------------- */
@@ -49,14 +41,6 @@ console.log(
   containerTasksDone,
   containerTasksTodo
 );
-
-function addTasks(name: string) {
-  tasks.push({ name: name, status: Status.ToDo });
-}
-
-function deleteTasks(name: string) {
-  tasks = tasks.filter((each) => each.name != name);
-}
 
 function getParentDiv(element: HTMLUListElement): HTMLDivElement {
   return element.parentElement as HTMLDivElement;
@@ -168,76 +152,54 @@ function setUpDropZones(): void {
   });
 }
 
-function moveTask(
-  taskName: string,
-  oldStatus: Status,
-  newStatus: Status
-): void {
-  console.log(`Moving ${taskName} from ${oldStatus} to ${newStatus}`);
+// function displayTasksByStatus(
+//   status: Status,
+//   container: HTMLUListElement
+// ): void {
+//   container.innerHTML = "";
 
-  const taskToMove = tasks.find(
-    (task) => task.name === taskName && task.status === oldStatus
-  );
+//   const filteredTasks = tasks.filter((task) => task.status === status);
 
-  if (!taskToMove) {
-    console.log("Task not found!!");
-    return;
-  }
+//   filteredTasks.forEach((task) => {
+//     const li = document.createElement("li");
+//     li.classList.add("each-list");
 
-  taskToMove.status = newStatus;
+//     const span = document.createElement("span");
+//     span.textContent = task.name;
+//     span.classList.add("task-name");
 
-  displayAllTasks();
-  console.log("Task moved successfully");
-}
+//     const deleteBtn = document.createElement("button");
+//     deleteBtn.textContent = "🗑️";
+//     deleteBtn.classList.add("delete-btn");
+//     deleteBtn.title = "Delete Task";
 
-function displayTasksByStatus(
-  status: Status,
-  container: HTMLUListElement
-): void {
-  container.innerHTML = "";
+//     li.appendChild(span);
+//     li.appendChild(deleteBtn);
 
-  const filteredTasks = tasks.filter((task) => task.status === status);
+//     deleteBtn.addEventListener("click", () => {
+//       deleteTasks(task.name);
+//       displayTasksByStatus(status, container);
+//     });
 
-  filteredTasks.forEach((task) => {
-    const li = document.createElement("li");
-    li.classList.add("each-list");
+//     li.draggable = true;
+//     li.dataset.name = task.name;
+//     li.dataset.status = task.status;
+//     li.addEventListener("dragstart", handleDragStart);
+//     li.addEventListener("dragend", handleDragEng);
+//     container.appendChild(li);
+//   });
+// }
 
-    const span = document.createElement("span");
-    span.textContent = task.name;
-    span.classList.add("task-name");
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "🗑️";
-    deleteBtn.classList.add("delete-btn");
-    deleteBtn.title = "Delete Task";
-
-    li.appendChild(span);
-    li.appendChild(deleteBtn);
-
-    deleteBtn.addEventListener("click", () => {
-      deleteTasks(task.name);
-      displayTasksByStatus(status, container);
-    });
-
-    li.draggable = true;
-    li.dataset.name = task.name;
-    li.dataset.status = task.status;
-    li.addEventListener("dragstart", handleDragStart);
-    li.addEventListener("dragend", handleDragEng);
-    container.appendChild(li);
-  });
-}
-
-function displayAllTasks(): void {
-  displayTasksByStatus(Status.ToDo, containerTasksTodoDisplay);
-  displayTasksByStatus(Status.Doing, containerTasksDoingDisplay);
-  displayTasksByStatus(Status.Done, containerTasksDoneDisplay);
-}
+// function displayAllTasks(): void {
+//   displayTasksByStatus(Status.ToDo, containerTasksTodoDisplay);
+//   displayTasksByStatus(Status.Doing, containerTasksDoingDisplay);
+//   displayTasksByStatus(Status.Done, containerTasksDoneDisplay);
+// }
 
 addBtn.addEventListener("click", (e) => {
   e.preventDefault();
   const taskName = inputField?.value.trim();
-  addTasks(taskName);
+  addTask(taskName);
   inputField.value = "";
   displayAllTasks();
 });

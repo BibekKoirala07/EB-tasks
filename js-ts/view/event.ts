@@ -1,1 +1,1 @@
-export function setupHanlders() {}
+export function setupHandlers() {}
