@@ -1,5 +1,6 @@
 // import { removeHoverClasses, getParentDiv } from "../utils/dom";
 // import { moveTask } from "../state/taskState";
+import { moveTask } from "../data/data.js";
 import { DraggedTask, Status } from "../types/types.js";
 import { displayAllTasks } from "../ui/renderTasks.js";
 import { getParentDiv, removeHoverClasses } from "../utils/utils.js";
@@ -69,6 +70,6 @@ export function handleDrop(e: DragEvent) {
       return;
   }
 
-  //   moveTask(draggedTasks.name, oldStatus, newStatus);
+  moveTask(draggedTasks.name, oldStatus, newStatus);
   displayAllTasks();
 }

@@ -13,3 +13,10 @@ export function addTasks(name) {
 export function deleteTasks(name) {
     tasks = tasks.filter((task) => task.name !== name);
 }
+export function moveTask(taskName, oldStatus, newStatus) {
+    const task = tasks.find((t) => t.name === taskName && t.status === oldStatus);
+    if (!task)
+        return false;
+    task.status = newStatus;
+    return true;
+}

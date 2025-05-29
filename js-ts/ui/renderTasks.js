@@ -1,9 +1,7 @@
-// import { deleteTask, tasks } from "../data/data";
 import { tasks } from "../data/data.js";
 import { handleDragEnd, handleDragStart } from "../handlers/dragHandlers.js";
 import { Status } from "../types/types.js";
 import { displays } from "./domreferences.js";
-// import { displays } from "./domreferences";
 function displayTasksByStatus(status, container) {
     container.innerHTML = "";
     const filteredTasks = tasks.filter((task) => task.status === status);

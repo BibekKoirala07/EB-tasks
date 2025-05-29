@@ -18,3 +18,14 @@ export function addTasks(name: string) {
 export function deleteTasks(name: string) {
   tasks = tasks.filter((task) => task.name !== name);
 }
+
+export function moveTask(
+  taskName: string,
+  oldStatus: Status,
+  newStatus: Status
+): boolean {
+  const task = tasks.find((t) => t.name === taskName && t.status === oldStatus);
+  if (!task) return false;
+  task.status = newStatus;
+  return true;
+}
