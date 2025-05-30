@@ -1,4 +1,4 @@
-import { tasks } from "../data/data.js";
+import { deleteTasks, tasks } from "../data/data.js";
 import { handleDragEnd, handleDragStart } from "../handlers/dragHandlers.js";
 import { Status } from "../types/types.js";
 import { displays } from "./domreferences.js";
@@ -28,7 +28,7 @@ function displayTasksByStatus(
     li.appendChild(deleteBtn);
 
     deleteBtn.addEventListener("click", () => {
-      //   deleteTask(task.name);
+      deleteTasks(task.name);
       displayTasksByStatus(status, container);
     });
 
